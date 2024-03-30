@@ -5,7 +5,7 @@
 	<columns>
 		<column name="category_srl" var="category_srl" filter="number" notnull="notnull"/>
 		<column name="title" var="title" notnull="notnull" />
-		<column name="tag" var="tag" minlength="1" maxlength="150" />
+		<column name="tag" var="tag" maxlength="150" />
 		<column name="content" var="content" notnull="notnull" />
 		<column name="uploaded_count" var="uploaded_count"/>
 		<column name="price" var="price" filter="number" notnull="notnull" />

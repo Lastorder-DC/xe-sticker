@@ -5,7 +5,7 @@
 	<columns>
 		<column name="category_srl" var="category_srl" filter="number" />
 		<column name="title" var="title" notnull="notnull" />
-		<column name="tag" var="tag" minlength="1" maxlength="300" />
+		<column name="tag" var="tag" maxlength="300" />
 		<column name="content" var="content" notnull="notnull" />
 
 		<column name="readed_count" var="readed_count" filter="number" />

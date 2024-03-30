@@ -49,7 +49,7 @@ class stickerView extends sticker
 
 			$args = new stdClass();
 			$args->page = Context::get('page');
-			$args->list_count = 16; ///< 한페이지에 보여줄 기록 수
+			$args->list_count = 15; ///< 한페이지에 보여줄 기록 수
 			$args->page_count = 10; ///< 페이지 네비게이션에 나타날 페이지의 수
 			$args->order_type = 'desc';
 			if($search_target && in_array($search_target, $columnList)) {
@@ -118,16 +118,16 @@ class stickerView extends sticker
 	function dispStickerWrite(){
 
 		if( !(extension_loaded('gd') && function_exists('gd_info')) ){
-			return new Object(-1,'GD_library_is_not_installed');
+			return new BaseObject(-1,'GD_library_is_not_installed');
 		}
 
 		$logged_info =  Context::get('logged_info');
 		if(!$logged_info){
-			return new Object(-1,'invalid_access');
+			return new BaseObject(-1,'invalid_access');
 		}
 
 		if(!$this->grant->upload){
-			return new Object(-1,'msg_access_denied');
+			return new BaseObject(-1,'msg_access_denied');
 		}
 
 		$sticker_srl = Context::get('sticker_srl');
@@ -142,31 +142,31 @@ class stickerView extends sticker
 			}
 
 			if(!($logged_info->member_srl == $output->data->member_srl || $logged_info->is_admin == 'Y' || $this->grant->manager)){
-				return new Object(-1,'invalid_access');
+				return new BaseObject(-1,'invalid_access');
 			}
 
 			if(!($logged_info->is_admin == 'Y' || $this->grant->manager)){
 				$sticker_status = $output->data->status;
 				if($sticker_status == "PUBLIC"){
 					if($this->module_config->public_modify != "Y"){
-						return new Object(-1, 'msg_modify_denied');
+						return new BaseObject(-1, 'msg_modify_denied');
 					}
 				} else if($sticker_status == "CHECK"){
 					if($this->module_config->check_modify != "Y"){
-						return new Object(-1, 'msg_modify_denied');
+						return new BaseObject(-1, 'msg_modify_denied');
 					}
 				} else if($sticker_status == "PAUSE"){
 					if($this->module_config->pause_modify != "Y"){
-						return new Object(-1, 'msg_modify_denied');
+						return new BaseObject(-1, 'msg_modify_denied');
 					}
 				} else if($sticker_status == "STOP"){
-					return new Object(-1, 'msg_modify_denied');
+					return new BaseObject(-1, 'msg_modify_denied');
 				} else {
-					return new Object(-1, 'invalid_status_sticker');
+					return new BaseObject(-1, 'invalid_status_sticker');
 				}
 
 				if($this->module_config->limit_modify_buy && $output->data->bought_count >= $this->module_config->limit_modify_buy){
-					return new Object(-1, sprintf('판매 수가 %d이상인 스티커는 수정할 수 없습니다.', $this->module_config->limit_modify_buy));
+					return new BaseObject(-1, sprintf('판매 수가 %d이상인 스티커는 수정할 수 없습니다.', $this->module_config->limit_modify_buy));
 				}
 			}
 
@@ -188,7 +188,7 @@ class stickerView extends sticker
 		$option->enable_component = FALSE;
 		$option->resizable = FALSE;
 		$option->disable_html = TRUE;
-		$option->skin = 'xpresseditor';
+		$option->skin = 'ckeditor';
 		$option->height = 200;
 		$editor = $oEditorModel->getEditor($logged_info->member_srl, $option);
 
@@ -207,7 +207,7 @@ class stickerView extends sticker
 		$member_srl = $logged_info ? $logged_info->member_srl : 0;
 		$sticker_srl = Context::get('sticker_srl');
 		if(!($sticker_srl)){
-			return new Object(-1,'invalid_access');
+			return new BaseObject(-1,'invalid_access');
 		}
 
 		$args = new stdClass();
@@ -217,31 +217,31 @@ class stickerView extends sticker
 			return $output;
 		}
 		if(empty($output->data) || !($output->data->member_srl == $member_srl || $logged_info->is_admin == 'Y' || $this->grant->manager)){
-			return new Object(-1,'invalid_access');
+			return new BaseObject(-1,'invalid_access');
 		}
 
 		if(!($logged_info->is_admin == 'Y' || $this->grant->manager)){
 			$sticker_status = $output->data->status;
 			if($sticker_status == "PUBLIC"){
 				if($this->module_config->public_delete != "Y"){
-					return new Object(-1, 'msg_delete_denied');
+					return new BaseObject(-1, 'msg_delete_denied');
 				}
 			} else if($sticker_status == "CHECK"){
 				if($this->module_config->check_delete != "Y"){
-					return new Object(-1, 'msg_delete_denied');
+					return new BaseObject(-1, 'msg_delete_denied');
 				}
 			} else if($sticker_status == "PAUSE"){
 				if($this->module_config->pause_delete != "Y"){
-					return new Object(-1, 'msg_delete_denied');
+					return new BaseObject(-1, 'msg_delete_denied');
 				}
 			} else if($sticker_status == "STOP"){
-				return new Object(-1, 'msg_delete_denied');
+				return new BaseObject(-1, 'msg_delete_denied');
 			} else {
-				return new Object(-1, 'invalid_status_sticker');
+				return new BaseObject(-1, 'invalid_status_sticker');
 			}
 
 			if($this->module_config->limit_delete_buy && $output->data->bought_count >= $this->module_config->limit_delete_buy){
-				return new Object(-1, sprintf('판매 수가 %d이상인 스티커는 삭제할 수 없습니다.', $this->module_config->limit_delete_buy));
+				return new BaseObject(-1, sprintf('판매 수가 %d이상인 스티커는 삭제할 수 없습니다.', $this->module_config->limit_delete_buy));
 			}
 		}
 
@@ -256,11 +256,11 @@ class stickerView extends sticker
 
 		$logged_info =  Context::get('logged_info');
 		if(!$logged_info){
-			return new Object(-1,'invalid_access');
+			return new BaseObject(-1,'invalid_access');
 		}
 		$args = new stdClass();
 		$args->page = Context::get('page');
-		$args->list_count = 22;
+		$args->list_count = 10;
 		$args->page_count = 10;
 		$args->order_type = 'asc';
 		$args->member_srl = $logged_info->member_srl;

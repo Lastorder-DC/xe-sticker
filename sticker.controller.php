@@ -8,6 +8,8 @@
 
 class stickerController extends sticker
 {
+
+
 	function init(){
 		//직접적으로 sticker모듈이 로딩되었을 때만 적용됨.
 		$oStickerModel = getModel('sticker');
@@ -19,16 +21,16 @@ class stickerController extends sticker
 	function triggerDeleteMember(&$obj){
 		$member_srl = $obj->member_srl;
 		if(!$member_srl){
-			return new Object();
+			return new BaseObject();
 		}
 		executeQuery('sticker.deleteStickerBuyAllByMemberSrl', $obj);
 
-		return new Object();
+		return new BaseObject();
 	}
 
 	function triggerBeforeModuleInit(&$obj){
 		if(!Context::get('is_logged')){
-			return new Object();
+			return new BaseObject();
 		}
 
 		$oStickerModel = getModel('sticker');
@@ -41,7 +43,7 @@ class stickerController extends sticker
 			$oMemberController->addMemberMenu('dispStickerMylist', 'cmd_sticker_mypage');
 		}
 
-		return new Object();
+		return new BaseObject();
 	}
 
 	function triggerMemberMenu(&$obj){
@@ -49,7 +51,7 @@ class stickerController extends sticker
 		$mid = Context::get('cur_mid');
 
 		if(!$member_srl || !$mid) {
-			return new Object();
+			return new BaseObject();
 		}
 
 		$logged_info = Context::get('logged_info');
@@ -59,7 +61,7 @@ class stickerController extends sticker
 		$cur_module_info = $oModuleModel->getModuleInfoByMid($mid, 0, $columnList);
 
 		if($cur_module_info->module != 'sticker'){
-			return new Object();
+			return new BaseObject();
 		}
 
 		if($member_srl == $logged_info->member_srl){
@@ -70,14 +72,14 @@ class stickerController extends sticker
 		}
 
 		if(!$member_info->user_id){
-			return new Object();
+			return new BaseObject();
 		}
 
 		$url = getUrl('', 'mid', 'sticker', 'search_target', 'nick_name', 'search_keyword', $member_info->nick_name);
 		$oMemberController = getController('member');
 		$oMemberController->addMemberPopupMenu($url, 'cmd_view_own_sticker', '');
 
-		return new Object();
+		return new BaseObject();
 	}
 
 	function triggerBeforeInsertDocument(&$obj){
@@ -86,7 +88,7 @@ class stickerController extends sticker
 		$module_config = $oStickerModel->getConfig();
 
 		if($module_config->use != "Y"){
-			return new Object();
+			return new BaseObject();
 		}
 
 		$content = $obj->content;
@@ -101,7 +103,7 @@ class stickerController extends sticker
 		$module_config = $oStickerModel->getConfig();
 
 		if($module_config->use != "Y"){
-			return new Object();
+			return new BaseObject();
 		}
 
 		$content = $obj->content;
@@ -116,7 +118,7 @@ class stickerController extends sticker
 		$module_config = $oStickerModel->getConfig();
 
 		if($module_config->use != "Y"){
-			return new Object();
+			return new BaseObject();
 		}
 
 		$logged_info = Context::get('logged_info');
@@ -127,29 +129,30 @@ class stickerController extends sticker
 		if(!empty($match)){
 			$checkFake = $this->_checkFakeSticker($match[1], $match[2], $member_srl);
 			if(!$checkFake){
-				return new Object(-1,'invalid sticker');
+				return new BaseObject(-1,'invalid sticker');
 			}
 
 			$isUsable = $this->_checkUsableSticker($match[1]);
 			if(!$isUsable){
-				return new Object(-1,'disalbe sticker');
+				return new BaseObject(-1,'disalbe sticker');
 			}
 
 			if($module_config->cmt_max_sticker_count != 0){
 				$writeStickeCount = $oStickerModel->getCommentSticekrCountByDocumentSrl($obj->document_srl, $member_srl);
 				if($writeStickeCount >= intval($module_config->cmt_max_sticker_count)){
-					return new Object(-1,'msg_exceed_wrote_sticker_count');
+					return new BaseObject(-1,'msg_exceed_wrote_sticker_count');
 				}
 			}
 
 
 			$obj->content = "{@sticker:".$match[1]."|".$match[2]."}";
 
+
 			$this->_increaseStickerUsedCount($match[1], $match[2], $member_srl);
 		} else {
 			$isHiddenSticker = $this->_checkStickerInContent($content);
 			if($isHiddenSticker){
-				return new Object(-1,'invalid sticker');
+				return new BaseObject(-1,'invalid sticker');
 			}
 		}
 
@@ -161,7 +164,7 @@ class stickerController extends sticker
 		$module_config = $oStickerModel->getConfig();
 
 		if($module_config->use != "Y"){
-			return new Object();
+			return new BaseObject();
 		}
 
 		$logged_info = Context::get('logged_info');
@@ -172,7 +175,7 @@ class stickerController extends sticker
 
 			if($oComment && $oComment->isExists()){
 				if(preg_match('/{@sticker:[0-9]+\|[0-9]+}/i', $oComment->content)){
-					return new Object(-1,'msg_invalid_update_comment');
+					return new BaseObject(-1,'msg_invalid_update_comment');
 				}
 			}
 		}
@@ -183,12 +186,12 @@ class stickerController extends sticker
 		if(!empty($match)){
 			$checkFake = $this->_checkFakeSticker($match[1], $match[2], $member_srl);
 			if(!$checkFake){
-				return new Object(-1,'invalid sticker');
+				return new BaseObject(-1,'invalid sticker');
 			}
 			if($module_config->cmt_max_sticker_count != 0){
 				$writeStickeCount = $oStickerModel->getCommentSticekrCountByDocumentSrl($obj->document_srl, $member_srl);
 				if($writeStickeCount > intval($module_config->cmt_max_sticker_count)){
-					return new Object(-1,'msg_exceed_wrote_sticker_count');
+					return new BaseObject(-1,'msg_exceed_wrote_sticker_count');
 				}
 			}
 
@@ -196,7 +199,7 @@ class stickerController extends sticker
 		} else {
 			$isHiddenSticker = $this->_checkStickerInContent($content);
 			if($isHiddenSticker){
-				return new Object(-1,'invalid sticker');
+				return new BaseObject(-1,'invalid sticker');
 			}
 		}
 
@@ -205,7 +208,7 @@ class stickerController extends sticker
 
 	function triggerBeforeDisplay(&$obj){
 		if(!Context::get('document_srl')){
-			return new Object();
+			return new BaseObject();
 		}
 
 		$temp_output = preg_replace_callback('/<!--BeforeComment\(([0-9]+),([0-9]+)\)-->.*{@sticker:([0-9]+)\|([0-9]+)}.*<!--AfterComment\([0-9]+,[0-9]+\)-->/', array($this, 'stickerCommentCallback'), $obj);
@@ -222,9 +225,9 @@ class stickerController extends sticker
 			$file_name = substr($data->file_name, 0, strrpos($data->file_name, "."));
 //!!!S
 			if(!$_COOKIE['txtmode']){
-				$part = '<!--BeforeComment('.$matches[1].','.$matches[2].')--><div class="comment_'.$matches[1].'_'.$matches[2].' xe_content"><a href="/?mid=sticker&sticker_srl='.$data->sticker_srl.'" title="'.$data->title.'" style="display:block;background-image:url('.$data->url.');background-size:cover;background-position:50% 50%;width:140px !important;height:140px !important;border-radius:3px;" alt="'.$file_name.'"></a></div><!--AfterComment('.$matches[1].','.$matches[2].')-->';
+				$part = '<!--BeforeComment('.$matches[1].','.$matches[2].')--><div class="comment_'.$matches[1].'_'.$matches[2].' xe_content"><span style="display:block;background-image:url('.$data->url.');background-repeat:no-repeat;background-position:0 50%;min-width:200px !important;min-height:120px !important;border-radius:3px;" alt="'.$file_name.'"></span></div><!--AfterComment('.$matches[1].','.$matches[2].')-->';
 			} else {
-				$part = '<!--BeforeComment('.$matches[1].','.$matches[2].')--><div class="txtmode comment_'.$matches[1].'_'.$matches[2].' xe_content"><p style="margin:1em;">데이터 절약 모드 작동중<BR><a href="/?mid=sticker&sticker_srl='.$data->sticker_srl.'" target="_blank" style="color:#777;">('.$data->title.')</a></p></div><!--AfterComment('.$matches[1].','.$matches[2].')-->';
+				$part = '<!--BeforeComment('.$matches[1].','.$matches[2].')--><div class="txtmode comment_'.$matches[1].'_'.$matches[2].' xe_content"><p style="margin:1em;">데이터 절약 모드 작동중<BR><span style="color:#777;">('.$data->title.')</span></p></div><!--AfterComment('.$matches[1].','.$matches[2].')-->';
 			}
 //!!!E
 
@@ -245,17 +248,17 @@ class stickerController extends sticker
 		$member_srl = $logged_info->member_srl;
 
 		if(!$logged_info || !$sticker_srl){
-			return new Object(-1,'msg_invalid_access');
+			return new BaseObject(-1,'msg_invalid_access');
 		}
 
 		if(!$this->grant->buy){
-			return new Object(-1,'msg_access_denied');
+			return new BaseObject(-1,'msg_access_denied');
 		}
 
 		$oStickerModel = getModel('sticker');
 		$sticker = $oStickerModel->getSticker($sticker_srl);
 		if(!$sticker){
-			return new Object(-1,'msg_invalid_sticker');
+			return new BaseObject(-1,'msg_invalid_sticker');
 		}
 
 		$start_date = (int)$sticker->start_date;
@@ -265,30 +268,30 @@ class stickerController extends sticker
 		$buy_limit = $sticker->buy_limit;
 		$status = $sticker->status;
 		if($buy_limit > 0 && $bought_count >= $buy_limit){
-			return new Object(-1,'msg_sold_out_sticker');
+			return new BaseObject(-1,'msg_sold_out_sticker');
 		}
 		if(($start_date && $date < $start_date) ||
 			($end_date && $date > $end_date)
 		){
-			return new Object(-1,'msg_not_sale_date');
+			return new BaseObject(-1,'msg_not_sale_date');
 		}
 		if($status != "PUBLIC"){
-			return new Object(-1,'msg_not_sale_sticker');
+			return new BaseObject(-1,'msg_not_sale_sticker');
 		}
 
 		$checkBuySticker = $oStickerModel->checkBuySticker($member_srl, $sticker_srl);
 		if($checkBuySticker){
-			return new Object(-1,'msg_already_bought_sticker');
+			return new BaseObject(-1,'msg_already_bought_sticker');
 		}
 
 		$isDefaultSticker = $this->_checkDefaultSticker($sticker_srl);
 		if($isDefaultSticker){
-			return new Object(-1,'msg_default_sticker');
+			return new BaseObject(-1,'msg_default_sticker');
 		}
 
 		$buyCount = $this->_getStickerBuyCount($member_srl);
 		if($this->module_config->buy_limit != 0 && $buyCount >= $this->module_config->buy_limit){
-			return new Object(-1,'msg_exceed_bougth_count');
+			return new BaseObject(-1,'msg_exceed_bougth_count');
 		}
 
 		if(!$this->grant->free){
@@ -296,7 +299,7 @@ class stickerController extends sticker
 			$point = intval($oPointModel->getPoint($member_srl));
 
 			if($sticker->price > $point){
-				return new Object(-1,'msg_not_enough_point');
+				return new BaseObject(-1,'msg_not_enough_point');
 			}
 
 			$this->_setBuyMemberPoint($sticker->member_srl, $logged_info->member_srl, $sticker->price);
@@ -317,7 +320,7 @@ class stickerController extends sticker
 		$args->regdate = $date;
 		$output = executeQuery('sticker.insertBuyStickerInfo', $args);
 		if (!$output->toBool())	{
-			return new Object(-1,'msg_fail_buy_sticker');
+			return new BaseObject(-1,'msg_fail_buy_sticker');
 		}
 
 		$checkBuyHistoryToday = $this->_checkBuyStickerToday($member_srl, $sticker_srl);
@@ -340,7 +343,7 @@ class stickerController extends sticker
 		$date = $this->module_config->start_time;
 
 		if(!$logged_info || !$sticker_srl || !$move || !($move && in_array($move, array('up', 'down'))) ) {
-			return new Object(-1,'msg_invalid_access');
+			return new BaseObject(-1,'msg_invalid_access');
 		}
 
 		$args = new stdClass();
@@ -349,10 +352,10 @@ class stickerController extends sticker
 		$args->date = $date;
 		$output = executeQuery('sticker.getStickerBuy', $args);
 		if( !$output->toBool() || empty($output->data) ){
-			return new Object(-1,'msg_invalid_sticker');
+			return new BaseObject(-1,'msg_invalid_sticker');
 		}
 		if(is_array($output->data)){
-			return new Object(-1,'msg_multiple_useable_same_sticker');
+			return new BaseObject(-1,'msg_multiple_useable_same_sticker');
 		}
 		$list_order = $output->data->list_order;
 
@@ -371,14 +374,14 @@ class stickerController extends sticker
 		$args1->date = $date;
 		$output = executeQuery('sticker.getStickerOrder', $args1);
 		if( !$output->toBool() || empty($output->data) ){
-			return new Object(-1,'msg_invalid_access');
+			return new BaseObject(-1,'msg_invalid_access');
 		}
 		$getStickerObj = current($output->data);
 		$swap_sticker_srl = $getStickerObj->sticker_srl;
 		$swap_list_order = $getStickerObj->list_order;
 
 		if(!isset($swap_sticker_srl) || !isset($swap_list_order)){
-			return new Object(-1,'msg_exception_process');
+			return new BaseObject(-1,'msg_exception_process');
 		}
 
 		$args2 = new stdClass();
@@ -405,22 +408,22 @@ class stickerController extends sticker
 
 		$logged_info = Context::get('logged_info');
 		if(!$logged_info){
-			return new Object(-1,'msg_invalid_access');
+			return new BaseObject(-1,'msg_invalid_access');
 		}
 
 		if(!$sticker_srl || !$no){
-			return new Object(-1,'msg_unknown_image');
+			return new BaseObject(-1,'msg_unknown_image');
 		} else if($no > $this->module_config->maxUploads || $no <= $this->module_config->minUploads){
-			return new Object(-1,'msg_invalid_image');
+			return new BaseObject(-1,'msg_invalid_image');
 		}
 
 		$output = $this->_getStickerFile($sticker_srl, $no);
 		if(empty($output)){
-			return new Object(-1,'msg_unknown_image');
+			return new BaseObject(-1,'msg_unknown_image');
 		}
 
 		if(!($output->member_srl == $logged_info->member_srl || $this->grant->manager || $logged_info->is_admin === "Y")){
-			return new Object(-1,'msg_invalid_access');
+			return new BaseObject(-1,'msg_invalid_access');
 		}
 
 		if(!($logged_info->is_admin == 'Y' || $this->grant->manager)){
@@ -434,30 +437,30 @@ class stickerController extends sticker
 
 			}
 			if(empty($output1->data)){
-				return new Object(-1,'msg_invalid_image');
+				return new BaseObject(-1,'msg_invalid_image');
 			}
 
 			$sticker_status = $output1->data->status;
 			if($sticker_status == "PUBLIC"){
 				if($this->module_config->public_modify != "Y"){
-					return new Object(-1, 'msg_modify_denied');
+					return new BaseObject(-1, 'msg_modify_denied');
 				}
 			} else if($sticker_status == "CHECK"){
 				if($this->module_config->check_modify != "Y"){
-					return new Object(-1, 'msg_modify_denied');
+					return new BaseObject(-1, 'msg_modify_denied');
 				}
 			} else if($sticker_status == "PAUSE"){
 				if($this->module_config->pause_modify != "Y"){
-					return new Object(-1, 'msg_modify_denied');
+					return new BaseObject(-1, 'msg_modify_denied');
 				}
 			} else if($sticker_status == "STOP"){
-				return new Object(-1, 'msg_modify_denied');
+				return new BaseObject(-1, 'msg_modify_denied');
 			} else {
-				return new Object(-1, 'invalid_status_sticker');
+				return new BaseObject(-1, 'invalid_status_sticker');
 			}
 
 			if($this->module_config->limit_modify_buy && $output1->data->bought_count >= $this->module_config->limit_modify_buy){
-				return new Object(-1, 'msg_modify_denied');
+				return new BaseObject(-1, 'msg_modify_denied');
 			}
 		}
 
@@ -475,7 +478,7 @@ class stickerController extends sticker
 	function procStickerDelete(){
 		$logged_info = Context::get('logged_info');
 		if(!$logged_info){
-			return new Object(-1,'msg_invalid_access');
+			return new BaseObject(-1,'msg_invalid_access');
 		}
 
 		$sticker_srl = Context::get('sticker_srl');
@@ -487,34 +490,34 @@ class stickerController extends sticker
 		}
 
 		if(empty($output->data)){
-			return new Object(-1,'msg_invalid_sticker');
+			return new BaseObject(-1,'msg_invalid_sticker');
 		}
 		if(!($logged_info->member_srl == $output->data->member_srl || $this->grant->manager || $logged_info->is_admin === "Y")){
-			return new Object(-1,'msg_invalid_access');
+			return new BaseObject(-1,'msg_invalid_access');
 		}
 
 		if(!($logged_info->is_admin == 'Y' || $this->grant->manager)){
 			$sticker_status = $output->data->status;
 			if($sticker_status == "PUBLIC"){
 				if($this->module_config->public_delete != "Y"){
-					return new Object(-1, 'msg_delete_denied');
+					return new BaseObject(-1, 'msg_delete_denied');
 				}
 			} else if($sticker_status == "CHECK"){
 				if($this->module_config->check_delete != "Y"){
-					return new Object(-1, 'msg_delete_denied');
+					return new BaseObject(-1, 'msg_delete_denied');
 				}
 			} else if($sticker_status == "PAUSE"){
 				if($this->module_config->pause_delete != "Y"){
-					return new Object(-1, 'msg_delete_denied');
+					return new BaseObject(-1, 'msg_delete_denied');
 				}
 			} else if($sticker_status == "STOP"){
-				return new Object(-1, 'msg_delete_denied');
+				return new BaseObject(-1, 'msg_delete_denied');
 			} else {
-				return new Object(-1, 'invalid_status_sticker');
+				return new BaseObject(-1, 'invalid_status_sticker');
 			}
 
 			if($this->module_config->limit_delete_buy && $output->data->bought_count >= $this->module_config->limit_delete_buy){
-				return new Object(-1, 'msg_delete_denied');
+				return new BaseObject(-1, 'msg_delete_denied');
 			}
 		}
 
@@ -536,7 +539,7 @@ class stickerController extends sticker
 
 		$logged_info = Context::get('logged_info');
 		if(!$logged_info){
-			return new Object(-1,'msg_invalid_access');
+			return new BaseObject(-1,'msg_invalid_access');
 		}
 
 		$sticker_srl = Context::get('sticker_srl');
@@ -544,7 +547,7 @@ class stickerController extends sticker
 		$oStickerModel = getModel('sticker');
 		$is_bougth = $oStickerModel->checkBuySticker($logged_info->member_srl, $sticker_srl);
 		if(!$is_bougth){
-			return new Object(-1,'sticker was not exist');
+			return new BaseObject(-1,'sticker was not exist');
 		}
 		$args = new stdClass();
 		$args->member_srl = $logged_info->member_srl;
@@ -560,7 +563,7 @@ class stickerController extends sticker
 
 	function procStickerInsert(){
 		if( !(extension_loaded('gd') && function_exists('gd_info')) ){
-			return new Object(-1,'GD_library_is_not_installed');
+			return new BaseObject(-1,'GD_library_is_not_installed');
 		}
 
 		$oModuleModel = getModel('module');
@@ -579,7 +582,7 @@ class stickerController extends sticker
 		$logged_info = Context::get('logged_info');
 
 		if(!$logged_info){
-			return new Object(-1,'msg_invalid_access');
+			return new BaseObject(-1,'msg_invalid_access');
 		}
 
 		if($sticker_srl){
@@ -595,35 +598,35 @@ class stickerController extends sticker
 			if(!empty($output->data)){
 
 				if(!($logged_info->member_srl == $output->data[0]->member_srl || $this->grant->manager || $logged_info->is_admin === "Y")){
-					return new Object(-1,'msg_invalid_access');
+					return new BaseObject(-1,'msg_invalid_access');
 				}
 
 				if(!$this->grant->upload){
-					return new Object(-1,'msg_access_denied');
+					return new BaseObject(-1,'msg_access_denied');
 				}
 
 				if(!($logged_info->is_admin == 'Y' || $this->grant->manager)){
 					$sticker_status = $output->data[0]->status;
 					if($sticker_status == "PUBLIC"){
 						if($this->module_config->public_modify != "Y"){
-							return new Object(-1, 'msg_modify_denied');
+							return new BaseObject(-1, 'msg_modify_denied');
 						}
 					} else if($sticker_status == "CHECK"){
 						if($this->module_config->check_modify != "Y"){
-							return new Object(-1, 'msg_modify_denied');
+							return new BaseObject(-1, 'msg_modify_denied');
 						}
 					} else if($sticker_status == "PAUSE"){
 						if($this->module_config->pause_modify != "Y"){
-							return new Object(-1, 'msg_modify_denied');
+							return new BaseObject(-1, 'msg_modify_denied');
 						}
 					} else if($sticker_status == "STOP"){
-						return new Object(-1, 'msg_modify_denied');
+						return new BaseObject(-1, 'msg_modify_denied');
 					} else {
-						return new Object(-1, 'invalid_status_sticker');
+						return new BaseObject(-1, 'invalid_status_sticker');
 					}
 
 					if($this->module_config->limit_modify_buy && $output->data[0]->bought_count >= $this->module_config->limit_modify_buy){
-						return new Object(-1, 'msg_modify_denied');
+						return new BaseObject(-1, 'msg_modify_denied');
 					}
 				}
 
@@ -632,17 +635,17 @@ class stickerController extends sticker
 		}
 
 		if(!$this->grant->upload){
-			return new Object(-1,'msg_access_denied');
+			return new BaseObject(-1,'msg_access_denied');
 		}
 
 		// 제목 유무 체크
 		if(!$obj->title){
-			return new Object(-1,'unknown title');
+			return new BaseObject(-1,'unknown title');
 		}
 
 		//빈 내용인지 체크
 		if(!$obj->content){
-			return new Object(-1,'unknown content');
+			return new BaseObject(-1,'unknown content');
 		}
 
 		//포인트 체크
@@ -651,7 +654,7 @@ class stickerController extends sticker
 		} else {
 
 			if($obj->price > $this->module_config->maxPoint || $obj->price < $this->module_config->minPoint){
-				return new Object(-1,'point error');
+				return new BaseObject(-1,'point error');
 			}
 
 		}
@@ -659,7 +662,7 @@ class stickerController extends sticker
 		//파일 체크
 		//파일이 존재하지 않을 시
 		if(!$obj->sticker_main_file || !$obj->sticker_file){
-			return new Object(-1,'file is not exist');
+			return new BaseObject(-1,'file is not exist');
 		} else { //존재 할 때 파일 갯수와 용량, 확장자 체크
 
 			$sticker_count = count($obj->sticker_file);
@@ -669,41 +672,41 @@ class stickerController extends sticker
 			$file_size_all = $this->module_config->file_size_all << 10;
 
 			if($sticker_count < $this->module_config->minUploads){
-				return new Object(-1,'file_is_not_enough');
+				return new BaseObject(-1,'file_is_not_enough');
 			}
 
 			if($sticker_count > $this->module_config->maxUploads){
-				return new Object(-1,'file_count_is_over_limit');
+				return new BaseObject(-1,'file_count_is_over_limit');
 			}
 
 			if($obj->sticker_main_file['error'] != 0){
-				return new Object(-1,'file transfer error');
+				return new BaseObject(-1,'file transfer error');
 			}
 
 			if($obj->sticker_main_file['size'] > $file_size){
-				return new Object(-1,'exceed file size');
+				return new BaseObject(-1,'exceed file size');
 			}
 
 			if(!in_array($obj->sticker_main_file['type'], $sticker_mime_type)){
-				return new Object(-1,'unknown file extension');
+				return new BaseObject(-1,'unknown file extension');
 			}
 
 			foreach($obj->sticker_file as $value){
 
 				if($value['error'] != 0){
-					return new Object(-1,'file transfer error');
+					return new BaseObject(-1,'file transfer error');
 				}
 
 				$sticker_accu_size += $value['size'];
 				if($value['size'] > $file_size){
-					return new Object(-1,'exceed file size');
+					return new BaseObject(-1,'exceed file size');
 				}
 				if($sticker_accu_size > $file_size_all){
-					return new Object(-1,'exceed files size');
+					return new BaseObject(-1,'exceed files size');
 				}
 
 				if(!in_array($value['type'], $sticker_mime_type)){
-					return new Object(-1,'unknown file extension');
+					return new BaseObject(-1,'unknown file extension');
 				}
 			}
 
@@ -727,13 +730,13 @@ class stickerController extends sticker
 			//정상적인 이미지 파일이 아닐 시
 			if($convert === false){
 				$this->_deleteStickerFiles($sticker_srl);
-				return new Object(-1,'unknown file extension');
+				return new BaseObject(-1,'unknown file extension');
 			} else if($convert === 2){
 				$this->_deleteStickerFiles($sticker_srl);
-				return new Object(-1,'image size is too small');
+				return new BaseObject(-1,'image size is too small');
 			} else if($convert === 3){
 				$this->_deleteStickerFiles($sticker_srl);
-				return new Object(-1,'image resolution is too big');
+				return new BaseObject(-1,'image resolution is too big');
 			}
 		}
 
@@ -748,13 +751,13 @@ class stickerController extends sticker
 				//정상적인 이미지 파일이 아닐 시
 				if($convert === false){
 					$this->_deleteStickerFiles($sticker_srl);
-					return new Object(-1,'unknown file extension');
+					return new BaseObject(-1,'unknown file extension');
 				} else if($convert === 2){
 					$this->_deleteStickerFiles($sticker_srl);
-					return new Object(-1,'image size is too small');
+					return new BaseObject(-1,'image size is too small');
 				} else if($convert === 3){
 					$this->_deleteStickerFiles($sticker_srl);
-					return new Object(-1,'image resolution is too big');
+					return new BaseObject(-1,'image resolution is too big');
 				}
 			}
 
@@ -815,12 +818,12 @@ class stickerController extends sticker
 
 		// 제목 유무 체크
 		if(!$obj->title){
-			return new Object(-1,'unknown title');
+			return new BaseObject(-1,'unknown title');
 		}
 
 		//빈 내용인지 체크
 		if(!$obj->content){
-			return new Object(-1,'unknown content');
+			return new BaseObject(-1,'unknown content');
 		}
 
 		//포인트 체크
@@ -828,7 +831,7 @@ class stickerController extends sticker
 			$obj->price = $this->module_config->minPoint;
 		} else {
 			if($obj->price > $this->module_config->maxPoint || $obj->price < $this->module_config->minPoint){
-				return new Object(-1,'point error');
+				return new BaseObject(-1,'point error');
 			}
 		}
 
@@ -882,21 +885,21 @@ class stickerController extends sticker
 			}
 
 			if($obj->sticker_main_file['error'] != 0){
-				return new Object(-1,'file transfer error');
+				return new BaseObject(-1,'file transfer error');
 			}
 
 			if($obj->sticker_main_file['size'] > $file_size){
-				return new Object(-1,'exceed file size');
+				return new BaseObject(-1,'exceed file size');
 			}
 
 			if($file_size_accm > $file_size_all - $main_image_info->file_size){
-				return new Object(-1,'exceed files size');
+				return new BaseObject(-1,'exceed files size');
 			}
 
 			$file_size_accm = $file_size_accm - $main_image_info->file_size + $obj->sticker_main_file['size'];
 
 			if(!in_array($obj->sticker_main_file['type'], $sticker_mime_type)){
-				return new Object(-1,'unknown file extension');
+				return new BaseObject(-1,'unknown file extension');
 			}
 
 			//update sticker
@@ -910,13 +913,13 @@ class stickerController extends sticker
 					$this->_updateFileStatus($sticker_srl);
 				} else if($convert == 2){
 					$this->_deleteFile($output->get('file_srl'));
-					return new Object(-1,'image size is too small');
+					return new BaseObject(-1,'image size is too small');
 				} else if($convert === false){
 					$this->_deleteFile($output->get('file_srl'));
-					return new Object(-1,'unknown file extension');
+					return new BaseObject(-1,'unknown file extension');
 				} else if($convert === 3){
 					$this->_deleteFile($output->get('file_srl'));
-					return new Object(-1,'image resolution is too big');
+					return new BaseObject(-1,'image resolution is too big');
 				}
 			}
 
@@ -927,11 +930,11 @@ class stickerController extends sticker
 			if($stk){
 
 				if($stk['error'] != 0){
-					return new Object(-1,'file transfer error');
+					return new BaseObject(-1,'file transfer error');
 				}
 
 				if(!in_array($stk['type'], $sticker_mime_type)){
-					return new Object(-1,'unknown file extension');
+					return new BaseObject(-1,'unknown file extension');
 				}
 
 				$image_info = null;
@@ -946,12 +949,12 @@ class stickerController extends sticker
 				//이미 존재한다면 업데이트
 				if($image_info){
 					if($stk['size'] > $file_size){
-						return new Object(-1,'exceed file size');
+						return new BaseObject(-1,'exceed file size');
 					}
 
 					$file_size_accm = $file_size_accm - $image_info->file_size + $stk['size'];
 					if($file_size_accm > $file_size_all){
-						return new Object(-1,'exceed files size');
+						return new BaseObject(-1,'exceed files size');
 					}
 
 					$output = $oFileController->insertFile($stk, $module_srl, $sticker_srl, 0, true);
@@ -964,13 +967,13 @@ class stickerController extends sticker
 							$this->_updateFileStatus($sticker_srl);
 						} else if($convert == 2){
 							$this->_deleteFile($output->get('file_srl'));
-							return new Object(-1,'image size is too small');
+							return new BaseObject(-1,'image size is too small');
 						} else if($convert === false){
 							$this->_deleteFile($output->get('file_srl'));
-							return new Object(-1,'unknown file extension');
+							return new BaseObject(-1,'unknown file extension');
 						} else if($convert === 3){
 							$this->_deleteFile($output->get('file_srl'));
-							return new Object(-1,'image resolution is too big');
+							return new BaseObject(-1,'image resolution is too big');
 						}
 					}
 
@@ -989,12 +992,12 @@ class stickerController extends sticker
 					$image_info = $output->data;
 
 					if($stk['size'] > $file_size){
-						return new Object(-1,'exceed file size');
+						return new BaseObject(-1,'exceed file size');
 					}
 
 					$file_size_accm += $stk['size'];
 					if($file_size_accm > $file_size_all){
-						return new Object(-1,'exceed files size');
+						return new BaseObject(-1,'exceed files size');
 					}
 
 					//데이터가 존재한다!
@@ -1010,13 +1013,13 @@ class stickerController extends sticker
 								$this->_updateFileStatus($sticker_srl);
 							} else if($convert == 2){
 								$this->_deleteFile($output->get('file_srl'));
-								return new Object(-1,'image size is too small');
+								return new BaseObject(-1,'image size is too small');
 							} else if($convert === false){
 								$this->_deleteFile($output->get('file_srl'));
-								return new Object(-1,'unknown file extension');
+								return new BaseObject(-1,'unknown file extension');
 							} else if($convert == 3){
 								$this->_deleteFile($output->get('file_srl'));
-								return new Object(-1,'image resolution is too big');
+								return new BaseObject(-1,'image resolution is too big');
 							}
 						}
 
@@ -1033,13 +1036,13 @@ class stickerController extends sticker
 								$this->_updateFileStatus($sticker_srl);
 							} else if($convert === false){
 								$this->_deleteFile($output->get('file_srl'));
-								return new Object(-1,'unknown file extension');
+								return new BaseObject(-1,'unknown file extension');
 							} else if($convert === 2){
 								$this->_deleteFile($output->get('file_srl'));
-								return new Object(-1,'image size is too small');
+								return new BaseObject(-1,'image size is too small');
 							} else if($convert === 3){
 								$this->_deleteFile($output->get('file_srl'));
-								return new Object(-1,'image resolution is too big');
+								return new BaseObject(-1,'image resolution is too big');
 							}
 						}
 
@@ -1123,7 +1126,7 @@ class stickerController extends sticker
 			$getImageSizeRate = ($getImageSizeRate > 1.8 || $getImageSizeRate < 0.65) || ($width >= $min_width || $height >= $min_height) ? 'crop' : 'ratio';
 		}
 
-		if($this->module_config->resizing == "N"){
+		if($this->module_config->resizing == "N" || ($width < 120 && $height < 120 ) ){
 			$this->_insertSickerFile($sticker_srl, $file_srl, $source_filename, $uploaded_filename, $is_update ? $file_count : $file_count++);
 			return true;
 		}
@@ -1413,12 +1416,42 @@ class stickerController extends sticker
 		$idx = $sequence ? $sequence : getNextSequence();
 		$sticker_srl = $obj->sticker_srl ? $obj->sticker_srl : 0;
 		$sticker_file_srl = $obj->sticker_file_srl ? $obj->sticker_file_srl : null;
-		$member_srl = $obj->member_srl ? $obj->member_srl : $logged_info ? $logged_info->member_srl : 0;
+		//$member_srl = $obj->member_srl ? $obj->member_srl : $logged_info ? $logged_info->member_srl : 0; //php 8 error
+		if($obj->member_srl)
+		{
+			$member_srl = $obj->member_srl;
+		}
+		elseif(Context::get('logged_info'))
+		{
+			$member_srl = $logged_info->member_srl;
+		}
+		else
+		{
+			$member_srl = 0;
+		}
+
 		$type = $obj->type ? $obj->type : null;
 		$comment_srl = $obj->comment_srl ? $obj->comment_srl : null;
 		$document_srl = $obj->document_srl ? $obj->document_srl : null;
 		$content = $obj->content ? $obj->content : null;
-		$point = $obj->point ? $obj->point : $obj->use_point ? $obj->use_point : $obj->price ? $obj->price : null;
+		//$point = $obj->point ? $obj->point : $obj->use_point ? $obj->use_point : $obj->price ? $obj->price : null; //php 8 error
+		if($obj->point)
+		{
+			$point = $obj->point;
+		}
+		elseif($obj->use_point)
+		{
+			$point = $obj->use_point;
+		}
+		elseif($obj->price)
+		{
+			$point = $obj->price;
+		}
+		else
+		{
+			$point = null;
+		}
+
 		$ipaddress = $obj->ipaddress ? $obj->ipaddress : $_SERVER['REMOTE_ADDR'];
 		$regdate = $obj->regdate ? $obj->regdate : date("YmdHis");
 

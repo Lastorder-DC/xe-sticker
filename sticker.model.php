@@ -44,7 +44,7 @@ class stickerModel extends sticker
 		$page = Context::get('page') ? Context::get('page') : 1;
 		$date = date('YmdHis');
 
-		$list_count = Mobile::isMobileCheckByAgent() ? 5 : 12;
+		$list_count = Mobile::isMobileCheckByAgent() ? 10 : 10;
 
 		if($logged_info){
 			$args = new stdClass();
@@ -131,18 +131,18 @@ class stickerModel extends sticker
 		$member_srl = $logged_info ? $logged_info->member_srl : 0;
 
 		if(!$sticker_srl){
-			return new Object(-1,'invalid_sticker');
+			return new BaseObject(-1,'invalid_sticker');
 		}
 
 		$isDefaultSticker = $this->checkDefaultSticker($sticker_srl);
 		if(!$isDefaultSticker){
 			if(!$member_srl){
-				return new Object(-1,'invalid_sticker');
+				return new BaseObject(-1,'invalid_sticker');
 			}
 
 			$isAccessable = $this->checkBuySticker($member_srl, $sticker_srl);
 			if(!$isAccessable){
-				return new Object(-1,'invalid_sticker');
+				return new BaseObject(-1,'invalid_sticker');
 			}
 		}
 
@@ -152,7 +152,7 @@ class stickerModel extends sticker
 		$args->sticker_srl = $sticker_srl;
 		$output = executeQuery('sticker.getStickerImage', $args);
 		if(!count($output->data)){
-			return new Object(-1,'invalid_sticker');
+			return new BaseObject(-1,'invalid_sticker');
 		}
 		foreach($output->data as $value){
 			$obj = new stdClass();
@@ -181,7 +181,7 @@ class stickerModel extends sticker
 		$typeComment = gettype($comments);
 		$count = 0;
 
-		if($typeComment === 'object'){
+		if($typeComment === 'BaseObject'){
 			if(preg_match('/{@sticker:[0-9]+\|[0-9]+}/i', $comments->content)){
 				$count++;
 			}

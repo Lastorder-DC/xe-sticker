@@ -47,9 +47,9 @@ class sticker extends ModuleObject
 		$config->add_member_menu = "N";
 		$config->default_sticker = "";
 		$config->deleted_sticker = '<i><p style="color: rgb(125, 125, 125);">존재하지 않는 스티커입니다.</p></i>';
-		$config->buy_limit = 20;
+		$config->buy_limit = 15;
 
-		$config->minPoint = 100;
+		$config->minPoint = 0;
 		$config->maxPoint = 600;
 		$config->returnPoint = 15;
 		$config->upload_charge = 0; //업로드 수수료. 단위 point
@@ -66,14 +66,14 @@ class sticker extends ModuleObject
 		$config->limit_delete_buy = 0;
 
 		$config->resizing = "Y";
-		$config->maxPx = 200;
+		$config->maxPx = 120;
 		$config->gifResizingIf = "Y";
 		$config->target_width = "Y";
 		$config->image_quality = 100;
-		$config->minUploads = 10;
-		$config->maxUploads = 24;
-		$config->image_min_width = 160;
-		$config->image_min_height = 160;
+		$config->minUploads = 5;
+		$config->maxUploads = 20;
+		$config->image_min_width = 40;
+		$config->image_min_height = 40;
 		$config->file_size = 2048; //KB
 		$config->file_size_all = 25000; //KB
 		$config->file_ext = "jpg,jpeg,png,gif";
@@ -86,7 +86,7 @@ class sticker extends ModuleObject
 			$oModuleController->insertTrigger($trigger[0], $trigger[1], $trigger[2], $trigger[3], $trigger[4]);
 		}
 
-		return new Object();
+		return new BaseObject();
 	}
 
 
@@ -112,7 +112,7 @@ class sticker extends ModuleObject
 			}
 		}
 
-		return new Object();
+		return new BaseObject();
 
 	}
 
@@ -146,7 +146,7 @@ class sticker extends ModuleObject
 			}
 		}
 
-		return new Object();
+		return new BaseObject();
 	}
 
 }

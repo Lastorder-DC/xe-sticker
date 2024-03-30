@@ -5,7 +5,7 @@
 	<p>{$XE_VALIDATOR_MESSAGE}</p>
 </div>
 
-<form method="post" class="x_form-horizontal">
+<form action="./" method="post" class="x_form-horizontal">
 	<input type="hidden" name="module" value="sticker">
 	<input type="hidden" name="act" value="procStickerAdminConfig">
 	<input type="hidden" name="success_return_url" value="{getUrl('', 'module', 'admin', 'act', 'dispStickerAdminConfig')}">
@@ -461,7 +461,7 @@ jQuery(function($){
 			return alert('포인트 판매 범위 최소값이 최댓값 보다 클 수 없습니다.'), false;
 		}
 
-		if(maxPx < 80){
+		if(maxPx < 40){
 			return alert('이미지 최대 사이즈 값이 너무 작습니다.'), false;
 		}
 
@@ -477,7 +477,7 @@ jQuery(function($){
 			return alert('스티커 업로드 갯수 범위 최소값이 최댓값 보다 클 수 없습니다.'), false;
 		}
 
-		if(image_min_width < 80 || image_min_height < 80){
+		if(image_min_width < 40 || image_min_height < 40){
 			return alert('이미지 최소 크기 값이 너무 작습니다.'), false;
 		}
 

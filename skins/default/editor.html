@@ -7,10 +7,10 @@
 </div>
 
 <div style="margin:10px">
-	<h2>스티커등록</h2>
+	<h2>스티커 등록</h2>
 </div>
 
-<form action="./" method="post" enctype="multipart/form-data" editor_sequence="2" class="bd_wrt bd_wrt_main clear">
+<form action="./" method="post" enctype="multipart/form-data" editor_sequence="2" class="bd_wrt bd_wrt_main clear" style="color:black;">
 	<input type="hidden" name="mid" value="{$mid}" />
 	<input type="hidden" name="act" value="procStickerInsert" />
 	<input type="hidden" name="content" value="{$sticker->content}" />
@@ -34,7 +34,9 @@
 			</td>
 		</tr>
 	</table>
-
+	<br />
+	<input type="hidden" name="price" value="0">
+	<!--
 	<table class="et_vars exForm bd_tb">
 		<caption><strong><em>*</em></strong> <small>: 필수항목</small></caption>
 		<tbody>
@@ -46,7 +48,7 @@
 			</tr>
 		</tbody>
 	</table>
-
+	-->
 	<table class="et_vars exForm bd_tb">
 		<tbody>
 			<tr>

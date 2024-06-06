@@ -108,7 +108,7 @@
 					{@
 					$sticker_file->file_name = substr($sticker_file->file_name, 0, strrpos($sticker_file->file_name, "."));
 					}
-						<div class="stk_img_v stk_file_{$sticker_file->no}" title="{htmlspecialchars($sticker_file->file_name, ENT_COMPAT | ENT_HTML401, 'UTF-8', false)}" style="background-image: url({$sticker_file->url});"></div>
+						<div class="stk_img_v stk_file_{$sticker_file->no}" title="{htmlspecialchars($sticker_file->file_name, ENT_COMPAT | ENT_HTML401, 'UTF-8', false)}"><img src="{$sticker_file->url}" style="width: 160px; height: 160px"></div>
 					</li>
 				</ul>
 			</div>

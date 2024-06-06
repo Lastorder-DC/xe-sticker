@@ -225,9 +225,10 @@ class stickerController extends sticker
 			$file_name = substr($data->file_name, 0, strrpos($data->file_name, "."));
 //!!!S
 			if(!$_COOKIE['txtmode']){
-				$part = '<!--BeforeComment('.$matches[1].','.$matches[2].')--><div class="comment_'.$matches[1].'_'.$matches[2].' xe_content"><span style="display:block;background-image:url('.$data->url.');background-repeat:no-repeat;background-position:0 50%;min-width:200px !important;min-height:120px !important;border-radius:3px;" alt="'.$file_name.'"></span></div><!--AfterComment('.$matches[1].','.$matches[2].')-->';
+				// $part = '<!--BeforeComment('.$matches[1].','.$matches[2].')--><div class="comment_'.$matches[1].'_'.$matches[2].' xe_content"><a href="/?mid=sticker&sticker_srl='.$data->sticker_srl.'" title="'.$data->title.'" style="display:block;background-image:url('.$data->url.');background-repeat:no-repeat;background-position:0 50%;min-width:200px !important;min-height:200px !important;border-radius:3px;" alt="'.$file_name.'"></a></div><!--AfterComment('.$matches[1].','.$matches[2].')-->';
+				$part = '<!--BeforeComment('.$matches[1].','.$matches[2].')--><div class="comment_'.$matches[1].'_'.$matches[2].' xe_content"><a href="/?mid=sticker&sticker_srl='.$data->sticker_srl.'" title="'.$data->title.'"><img src="'.$data->url.'" style="width:120px;height:120px;border-radius:3px;" alt="'.$file_name.'"></a></div><!--AfterComment('.$matches[1].','.$matches[2].')-->';
 			} else {
-				$part = '<!--BeforeComment('.$matches[1].','.$matches[2].')--><div class="txtmode comment_'.$matches[1].'_'.$matches[2].' xe_content"><p style="margin:1em;">데이터 절약 모드 작동중<BR><span style="color:#777;">('.$data->title.')</span></p></div><!--AfterComment('.$matches[1].','.$matches[2].')-->';
+				$part = '<!--BeforeComment('.$matches[1].','.$matches[2].')--><div class="txtmode comment_'.$matches[1].'_'.$matches[2].' xe_content"><p style="margin:1em;">데이터 절약 모드 작동중<BR><a href="/?mid=sticker&sticker_srl='.$data->sticker_srl.'" target="_blank" style="color:#777;">('.$data->title.')</a></p></div><!--AfterComment('.$matches[1].','.$matches[2].')-->';
 			}
 //!!!E
 
@@ -667,7 +668,7 @@ class stickerController extends sticker
 
 			$sticker_count = count($obj->sticker_file);
 			$sticker_accu_size = 0;
-			$sticker_mime_type = array('image/jpeg', 'image/gif', 'image/png');
+			$sticker_mime_type = array('image/jpeg', 'image/gif', 'image/png', 'image/webp');
 			$file_size = $this->module_config->file_size << 10;
 			$file_size_all = $this->module_config->file_size_all << 10;
 
@@ -851,7 +852,7 @@ class stickerController extends sticker
 		}
 
 		$sticker_file = $output->data;
-		$sticker_mime_type = array('image/jpeg', 'image/gif', 'image/png');
+		$sticker_mime_type = array('image/jpeg', 'image/gif', 'image/png', 'image/webp');
 		$file_size = $this->module_config->file_size << 10;
 		$file_size_all = $this->module_config->file_size_all << 10;
 
@@ -1094,7 +1095,7 @@ class stickerController extends sticker
 			return false;
 		}
 
-		if(!preg_match("/\.(jpg|jpeg|gif|png)$/i", $uploaded_filename , $file_ext)){
+		if(!preg_match("/\.(jpg|jpeg|gif|png|webp)$/i", $uploaded_filename , $file_ext)){
 			return false;
 		}
 
@@ -1217,7 +1218,7 @@ class stickerController extends sticker
 			return false;
 		}
 
-		if(!preg_match("/\.(jpg|jpeg|gif|png)$/i", $uploaded_filename , $file_ext)){
+		if(!preg_match("/\.(jpg|jpeg|gif|png|webp)$/i", $uploaded_filename , $file_ext)){
 			return false;
 		}
 
